@@ -13,8 +13,17 @@ import {
   DialogTrigger,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Star, GraduationCap, Clock, Calendar, User, Search } from "lucide-react";
+import {
+  Star,
+  Clock,
+  Calendar,
+  User,
+  Search,
+  GraduationCap,
+  Award,
+  Languages,
+  ChevronLeft,
+} from "lucide-react";
 import { DOCTORS, DEPARTMENTS } from "@/lib/hospital-data";
 import { AppointmentDialog } from "@/components/appointment-dialog";
 
@@ -35,36 +44,33 @@ export function Doctors() {
   const departmentName = (slug: string) =>
     DEPARTMENTS.find((d) => d.slug === slug)?.name || slug;
 
-  const getInitials = (name: string) => {
-    const parts = name.replace("دکتر ", "").split(" ");
-    return parts.map((p) => p[0]).join("").slice(0, 2);
-  };
-
   return (
-    <section id="doctors" className="py-20 lg:py-28 bg-gradient-medical relative overflow-hidden">
-      <div className="absolute top-0 right-0 w-96 h-96 bg-teal-200/30 rounded-full blur-3xl" />
-      <div className="absolute bottom-0 left-0 w-96 h-96 bg-rose-200/20 rounded-full blur-3xl" />
+    <section id="doctors" className="py-24 lg:py-32 bg-gradient-medical relative overflow-hidden">
+      <div className="absolute top-0 right-0 w-96 h-96 bg-teal-200/30 rounded-full blur-3xl opacity-50" />
+      <div className="absolute bottom-0 left-0 w-96 h-96 bg-rose-200/20 rounded-full blur-3xl opacity-50" />
+
       <div className="container relative mx-auto px-4">
+        {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center max-w-3xl mx-auto mb-12"
+          className="max-w-3xl mb-16"
         >
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4">
-            <User className="size-4" />
-            کادر پزشکی
-          </div>
-          <h2 className="text-3xl md:text-5xl font-bold mb-6 text-balance">
-            پزشکان <span className="text-gradient-medical">متخصص</span> ما
+          <div className="eyebrow mb-4">کادر پزشکی</div>
+          <h2 className="text-4xl lg:text-6xl font-bold mb-6 text-balance">
+            با <span className="text-gradient-teal">بهترین‌ها</span>
+            <br />
+            در مسیر سلامت قدم بردارید
           </h2>
-          <p className="text-lg text-muted-foreground leading-relaxed">
-            با پزشکانی که هر یک پیشگام حوزه تخصصی خود هستند، در مسیر سلامت شما قدم برمی‌داریم.
+          <p className="text-lg text-muted-foreground leading-relaxed text-pretty">
+            تیمی از فلوشیپ‌های بین‌المللی، اساتید دانشگاه و پزشکان پیشرو در حوزه‌های
+            تخصصی، با تجربه‌ای بالغ بر ده‌ها سال و هزاران بیمار درمان‌شده.
           </p>
         </motion.div>
 
         {/* Filters */}
-        <div className="flex flex-col md:flex-row gap-4 mb-10 items-center justify-between">
+        <div className="flex flex-col md:flex-row gap-4 mb-12 items-center justify-between">
           <div className="flex flex-wrap gap-2 justify-center">
             <Button
               size="sm"
@@ -72,34 +78,37 @@ export function Doctors() {
               onClick={() => setFilter("all")}
               className="rounded-full"
             >
-              همه پزشکان
+              همه پزشکان ({DOCTORS.length})
             </Button>
-            {DEPARTMENTS.slice(0, 6).map((d) => (
-              <Button
-                key={d.slug}
-                size="sm"
-                variant={filter === d.slug ? "default" : "outline"}
-                onClick={() => setFilter(d.slug)}
-                className="rounded-full"
-              >
-                {d.name}
-              </Button>
-            ))}
+            {DEPARTMENTS.slice(0, 6).map((d) => {
+              const count = DOCTORS.filter((doc) => doc.department === d.slug).length;
+              return (
+                <Button
+                  key={d.slug}
+                  size="sm"
+                  variant={filter === d.slug ? "default" : "outline"}
+                  onClick={() => setFilter(d.slug)}
+                  className="rounded-full"
+                >
+                  {d.name} ({count})
+                </Button>
+              );
+            })}
           </div>
 
-          <div className="relative w-full md:w-72">
-            <Search className="absolute right-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+          <div className="relative w-full md:w-80">
+            <Search className="absolute right-4 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
             <input
               type="text"
-              placeholder="جستجوی پزشک..."
+              placeholder="جستجوی پزشک، تخصص..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pr-10 pl-4 py-2 rounded-full border border-border bg-white text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+              className="w-full pr-12 pl-4 py-3 rounded-full border border-border bg-white text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50 transition-shadow shadow-soft"
             />
           </div>
         </div>
 
-        {/* Doctors grid */}
+        {/* Doctors grid - editorial layout */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {filtered.map((doctor, idx) => (
             <motion.div
@@ -110,129 +119,184 @@ export function Doctors() {
               transition={{ delay: idx * 0.05 }}
             >
               <Dialog>
-                <Card className="group relative h-full overflow-hidden p-6 border-0 bg-white shadow-medical hover:shadow-medical-lg transition-all duration-300 cursor-pointer">
-                  {/* Top accent */}
-                  <div className="absolute top-0 right-0 left-0 h-1 bg-gradient-to-l from-primary to-cyan-400" />
+                <Card className="group relative h-full overflow-hidden border-0 bg-white shadow-card hover:shadow-floating transition-all duration-500 cursor-pointer">
+                  {/* Image */}
+                  <div className="relative aspect-[4/5] overflow-hidden bg-muted">
+                    <img
+                      src={doctor.image}
+                      alt={doctor.name}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
 
-                  {/* Avatar */}
-                  <div className="flex items-start justify-between mb-4">
-                    <Avatar className="size-16 ring-4 ring-primary/10">
-                      <AvatarFallback className="bg-gradient-to-br from-teal-500 to-cyan-600 text-white text-xl font-bold">
-                        {getInitials(doctor.name)}
-                      </AvatarFallback>
-                    </Avatar>
-                    {doctor.available ? (
-                      <Badge variant="default" className="bg-emerald-100 text-emerald-700 hover:bg-emerald-100 border-0">
-                        <span className="size-1.5 rounded-full bg-emerald-500 mr-1 animate-pulse" />
-                        پذیرش
-                      </Badge>
-                    ) : (
-                      <Badge variant="secondary" className="bg-amber-100 text-amber-700 hover:bg-amber-100 border-0">
-                        تکمیل ظرفیت
-                      </Badge>
-                    )}
-                  </div>
-
-                  <h3 className="text-lg font-bold mb-1">{doctor.name}</h3>
-                  <p className="text-sm text-primary font-medium mb-2">{doctor.title}</p>
-                  <p className="text-xs text-muted-foreground mb-3 line-clamp-2">{doctor.specialty}</p>
-
-                  <div className="flex items-center justify-between text-xs text-muted-foreground mb-4">
-                    <div className="flex items-center gap-1">
-                      <Star className="size-3.5 text-amber-400 fill-amber-400" />
-                      <span className="font-bold text-foreground">{doctor.rating.toFixed(1)}</span>
+                    {/* Status badge */}
+                    <div className="absolute top-3 right-3">
+                      {doctor.available ? (
+                        <Badge className="bg-emerald-500/90 text-white border-0 backdrop-blur-md">
+                          <span className="size-1.5 rounded-full bg-white mr-1.5 animate-pulse" />
+                          پذیرش
+                        </Badge>
+                      ) : (
+                        <Badge variant="secondary" className="bg-amber-500/90 text-white border-0 backdrop-blur-md">
+                          تکمیل ظرفیت
+                        </Badge>
+                      )}
                     </div>
-                    <div className="flex items-center gap-1">
-                      <Clock className="size-3.5" />
-                      <span>{doctor.experience} سال تجربه</span>
+
+                    {/* Rating badge */}
+                    <div className="absolute top-3 left-3">
+                      <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-black/40 backdrop-blur-md text-white text-xs">
+                        <Star className="size-3 text-amber-400 fill-amber-400" />
+                        <span className="font-bold">{doctor.rating}</span>
+                      </div>
+                    </div>
+
+                    {/* Name overlay */}
+                    <div className="absolute bottom-0 right-0 left-0 p-4">
+                      <h3 className="text-white font-bold text-lg">{doctor.name}</h3>
+                      <p className="text-cyan-200 text-xs">{doctor.title}</p>
                     </div>
                   </div>
 
-                  <div className="flex gap-2">
-                    <DialogTrigger asChild>
-                      <Button variant="outline" size="sm" className="flex-1">مشاهده پروفایل</Button>
-                    </DialogTrigger>
-                    <AppointmentDialog defaultDoctor={doctor.slug}>
-                      <Button size="sm" className="flex-1 bg-gradient-to-l from-teal-600 to-cyan-700 text-white">
-                        نوبت
-                      </Button>
-                    </AppointmentDialog>
-                  </div>
+                  {/* Body */}
+                  <div className="p-4">
+                    <p className="text-xs text-muted-foreground mb-3 line-clamp-2">{doctor.specialty}</p>
 
-                  <DialogContent className="max-w-xl max-h-[90vh] overflow-y-auto">
-                    <DialogHeader>
-                      <DialogTitle className="text-2xl">{doctor.name}</DialogTitle>
-                      <DialogDescription className="text-base">
-                        {doctor.title} - {doctor.specialty}
-                      </DialogDescription>
-                    </DialogHeader>
-
-                    <div className="space-y-6 pt-4">
-                      <div className="flex items-start gap-4">
-                        <Avatar className="size-20 ring-4 ring-primary/10 flex-shrink-0">
-                          <AvatarFallback className="bg-gradient-to-br from-teal-500 to-cyan-600 text-white text-2xl font-bold">
-                            {getInitials(doctor.name)}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div className="flex-1">
-                          <div className="flex items-center gap-3 mb-2">
-                            <Badge variant="secondary">{departmentName(doctor.department)}</Badge>
-                            {doctor.available && (
-                              <Badge variant="default" className="bg-emerald-100 text-emerald-700 hover:bg-emerald-100 border-0">
-                                در حال پذیرش
-                              </Badge>
-                            )}
-                          </div>
-                          <div className="flex items-center gap-4 text-sm">
-                            <div className="flex items-center gap-1">
-                              <Star className="size-4 text-amber-400 fill-amber-400" />
-                              <span className="font-bold">{doctor.rating.toFixed(1)}</span>
-                            </div>
-                            <div className="flex items-center gap-1 text-muted-foreground">
-                              <Clock className="size-4" />
-                              <span>{doctor.experience} سال تجربه</span>
-                            </div>
-                          </div>
-                        </div>
+                    <div className="flex items-center justify-between text-xs text-muted-foreground mb-4">
+                      <div className="flex items-center gap-1">
+                        <Clock className="size-3.5" />
+                        <span>{doctor.experience} سال</span>
                       </div>
-
-                      <div>
-                        <h4 className="font-bold mb-2 text-lg">درباره پزشک</h4>
-                        <p className="text-sm text-muted-foreground leading-relaxed">{doctor.bio}</p>
+                      <div className="flex items-center gap-1">
+                        <User className="size-3.5" />
+                        <span>{doctor.reviews} نظر</span>
                       </div>
+                    </div>
 
-                      <div>
-                        <h4 className="font-bold mb-3 text-lg flex items-center gap-2">
-                          <GraduationCap className="size-5 text-primary" />
-                          تحصیلات و سوابق
-                        </h4>
-                        <ul className="space-y-2">
-                          {doctor.education.map((edu, i) => (
-                            <li key={i} className="flex items-start gap-2 text-sm">
-                              <div className="size-1.5 rounded-full bg-primary mt-1.5 flex-shrink-0" />
-                              <span>{edu}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-
+                    <div className="flex gap-2">
+                      <DialogTrigger asChild>
+                        <Button variant="outline" size="sm" className="flex-1 text-xs">
+                          پروفایل
+                        </Button>
+                      </DialogTrigger>
                       <AppointmentDialog defaultDoctor={doctor.slug}>
-                        <Button className="w-full bg-gradient-to-l from-teal-600 to-cyan-700 text-white gap-2">
-                          <Calendar className="size-4" />
-                          دریافت نوبت از این پزشک
+                        <Button size="sm" className="flex-1 bg-gradient-to-l from-teal-700 to-cyan-800 text-white text-xs">
+                          نوبت
                         </Button>
                       </AppointmentDialog>
                     </div>
-                  </DialogContent>
+                  </div>
                 </Card>
+
+                {/* Doctor detail dialog */}
+                <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto p-0">
+                  <div className="relative aspect-[16/9] overflow-hidden rounded-t-2xl">
+                    <img src={doctor.image} alt={doctor.name} className="w-full h-full object-cover" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
+                    <div className="absolute bottom-0 right-0 left-0 p-8">
+                      <div className="flex items-center gap-2 mb-2">
+                        {doctor.available && (
+                          <Badge className="bg-emerald-500 text-white border-0">
+                            <span className="size-1.5 rounded-full bg-white mr-1.5 animate-pulse" />
+                            در حال پذیرش
+                          </Badge>
+                        )}
+                        <Badge variant="secondary" className="bg-white/20 backdrop-blur-md text-white border-0">
+                          {departmentName(doctor.department)}
+                        </Badge>
+                      </div>
+                      <h2 className="text-3xl font-bold text-white mb-1">{doctor.name}</h2>
+                      <p className="text-cyan-200">{doctor.title} • {doctor.specialty}</p>
+                    </div>
+                  </div>
+
+                  <div className="p-8 space-y-8">
+                    {/* Quick stats */}
+                    <div className="grid grid-cols-4 gap-4">
+                      {[
+                        { icon: Star, label: "امتیاز", value: doctor.rating.toFixed(1) },
+                        { icon: User, label: "نظرات", value: doctor.reviews.toString() },
+                        { icon: Clock, label: "تجربه", value: `${doctor.experience} سال` },
+                        { icon: Award, label: "گواهینامه", value: doctor.certifications.length.toString() },
+                      ].map((stat, i) => (
+                        <div key={i} className="text-center p-4 rounded-xl bg-muted/50">
+                          <stat.icon className="size-5 text-primary mx-auto mb-2" />
+                          <div className="font-bold text-lg">{stat.value}</div>
+                          <div className="text-xs text-muted-foreground">{stat.label}</div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Bio */}
+                    <div>
+                      <h3 className="text-xl font-bold mb-3">درباره پزشک</h3>
+                      <p className="text-muted-foreground leading-relaxed">{doctor.bio}</p>
+                    </div>
+
+                    {/* Education */}
+                    <div>
+                      <h3 className="flex items-center gap-2 text-xl font-bold mb-4">
+                        <GraduationCap className="size-5 text-primary" />
+                        تحصیلات و سوابق
+                      </h3>
+                      <div className="space-y-3">
+                        {doctor.education.map((edu, i) => (
+                          <div key={i} className="flex items-start gap-3 p-4 rounded-xl bg-muted/50">
+                            <div className="size-2 rounded-full bg-primary mt-2 flex-shrink-0" />
+                            <span className="text-sm">{edu}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Certifications */}
+                    <div>
+                      <h3 className="flex items-center gap-2 text-xl font-bold mb-4">
+                        <Award className="size-5 text-primary" />
+                        گواهینامه‌ها و عضویت‌ها
+                      </h3>
+                      <div className="flex flex-wrap gap-2">
+                        {doctor.certifications.map((cert) => (
+                          <Badge key={cert} variant="secondary" className="bg-primary/10 text-primary border border-primary/20">
+                            {cert}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Languages */}
+                    <div>
+                      <h3 className="flex items-center gap-2 text-xl font-bold mb-4">
+                        <Languages className="size-5 text-primary" />
+                        زبان‌های صحبت
+                      </h3>
+                      <div className="flex flex-wrap gap-2">
+                        {doctor.languages.map((lang) => (
+                          <span key={lang} className="px-3 py-1 rounded-full bg-muted text-sm">
+                            {lang}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* CTA */}
+                    <AppointmentDialog defaultDoctor={doctor.slug}>
+                      <Button className="w-full bg-gradient-to-l from-teal-700 to-cyan-800 text-white gap-2 h-12">
+                        <Calendar className="size-5" />
+                        دریافت نوبت از این پزشک
+                      </Button>
+                    </AppointmentDialog>
+                  </div>
+                </DialogContent>
               </Dialog>
-              </motion.div>
-            ))}
-          </div>
+            </motion.div>
+          ))}
+        </div>
 
         {filtered.length === 0 && (
-          <div className="text-center py-12 text-muted-foreground">
-            پزشکی با این مشخصات یافت نشد.
+          <div className="text-center py-16">
+            <div className="text-4xl mb-4">🔍</div>
+            <p className="text-muted-foreground">پزشکی با این مشخصات یافت نشد.</p>
           </div>
         )}
       </div>

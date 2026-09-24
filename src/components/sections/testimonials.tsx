@@ -2,35 +2,55 @@
 
 import { motion } from "framer-motion";
 import { Card } from "@/components/ui/card";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Star, Quote } from "lucide-react";
+import { Star, Quote, ArrowLeft } from "lucide-react";
 import { TESTIMONIALS } from "@/lib/hospital-data";
 
 export function Testimonials() {
   return (
-    <section className="py-20 lg:py-28 bg-gradient-to-l from-teal-50 to-cyan-50 relative overflow-hidden">
-      <div className="absolute top-0 right-1/4 w-72 h-72 bg-cyan-200/30 rounded-full blur-3xl" />
-      <div className="absolute bottom-0 left-1/4 w-72 h-72 bg-rose-200/30 rounded-full blur-3xl" />
+    <section className="py-24 lg:py-32 bg-gradient-medical relative overflow-hidden">
+      <div className="absolute top-0 right-1/4 w-96 h-96 bg-teal-200/30 rounded-full blur-3xl" />
+      <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-rose-200/20 rounded-full blur-3xl" />
 
       <div className="container relative mx-auto px-4">
+        {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center max-w-3xl mx-auto mb-16"
+          className="max-w-3xl mx-auto text-center mb-16"
         >
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4">
-            <Quote className="size-4" />
-            تجربه بیماران
-          </div>
-          <h2 className="text-3xl md:text-5xl font-bold mb-6 text-balance">
-            رضایت <span className="text-gradient-medical">بیماران</span> ما
+          <div className="eyebrow mb-4 inline-block">تجربه بیماران</div>
+          <h2 className="text-4xl lg:text-6xl font-bold mb-6 text-balance">
+            رضایت
+            <br />
+            <span className="text-gradient-teal">صدای بیماران</span> ما
           </h2>
-          <p className="text-lg text-muted-foreground leading-relaxed">
+          <p className="text-lg text-muted-foreground leading-relaxed text-pretty">
             صدها هزار بیمار به ما اعتماد کرده‌اند و داستان سلامتی خود را با ما رقم زده‌اند.
           </p>
         </motion.div>
 
+        {/* Stats bar */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16 p-8 rounded-3xl bg-white shadow-elevated"
+        >
+          {[
+            { value: "۴.۹/۵", label: "میانگین رضایت" },
+            { value: "۹۸٪", label: "توصیه به دیگران" },
+            { value: "+۱۲۰هزار", label: "بیمار درمان‌شده" },
+            { value: "+۸٬۵۰۰", label: "نظر مثبت" },
+          ].map((stat, i) => (
+            <div key={i} className="text-center">
+              <div className="text-3xl lg:text-4xl font-bold text-gradient-teal mb-1">{stat.value}</div>
+              <div className="text-xs text-muted-foreground">{stat.label}</div>
+            </div>
+          ))}
+        </motion.div>
+
+        {/* Testimonials */}
         <div className="grid md:grid-cols-3 gap-6">
           {TESTIMONIALS.map((testimonial, idx) => (
             <motion.div
@@ -40,10 +60,10 @@ export function Testimonials() {
               viewport={{ once: true }}
               transition={{ delay: idx * 0.1 }}
             >
-              <Card className="relative h-full p-6 border-0 bg-white shadow-medical hover:shadow-medical-lg transition-all">
+              <Card className="relative h-full p-8 border-0 bg-white shadow-card hover:shadow-floating transition-all">
                 {/* Quote icon */}
-                <div className="absolute -top-3 -right-3 size-12 rounded-full bg-gradient-to-br from-primary to-cyan-600 flex items-center justify-center shadow-lg">
-                  <Quote className="size-5 text-white" />
+                <div className="absolute -top-4 -right-4 size-12 rounded-2xl bg-gradient-to-br from-teal-600 to-cyan-700 flex items-center justify-center shadow-glow-teal">
+                  <Quote className="size-6 text-white" />
                 </div>
 
                 {/* Stars */}
@@ -54,51 +74,36 @@ export function Testimonials() {
                 </div>
 
                 {/* Text */}
-                <p className="text-sm text-foreground/80 leading-relaxed mb-6 min-h-[100px]">
+                <p className="text-foreground/80 leading-relaxed mb-6 text-pretty">
                   «{testimonial.text}»
                 </p>
 
-                {/* Author */}
-                <div className="flex items-center gap-3 pt-4 border-t border-border">
-                  <Avatar className="size-12 ring-2 ring-primary/20">
-                    <AvatarFallback className="bg-gradient-to-br from-primary to-cyan-600 text-white font-bold">
-                      {testimonial.image}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <div className="font-bold text-sm">{testimonial.name}</div>
-                    <div className="text-xs text-muted-foreground">{testimonial.role}</div>
+                {/* Footer */}
+                <div className="flex items-center justify-between pt-4 border-t border-border">
+                  <div className="flex items-center gap-3">
+                    <img
+                      src={testimonial.image}
+                      alt={testimonial.name}
+                      className="size-12 rounded-full object-cover ring-2 ring-primary/20"
+                    />
+                    <div>
+                      <div className="font-bold text-sm">{testimonial.name}</div>
+                      <div className="text-xs text-muted-foreground">{testimonial.role}</div>
+                    </div>
                   </div>
+                  <ArrowLeft className="size-4 text-muted-foreground" />
+                </div>
+
+                {/* Procedure tag */}
+                <div className="mt-4">
+                  <span className="inline-block text-xs text-primary bg-primary/5 px-2 py-1 rounded">
+                    {testimonial.procedure}
+                  </span>
                 </div>
               </Card>
             </motion.div>
           ))}
         </div>
-
-        {/* Stats banner */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-4 p-6 rounded-3xl bg-white shadow-medical"
-        >
-          <div className="text-center">
-            <div className="text-3xl font-bold text-primary">۴.۹/۵</div>
-            <div className="text-xs text-muted-foreground mt-1">میانگین رضایت</div>
-          </div>
-          <div className="text-center">
-            <div className="text-3xl font-bold text-primary">۹۸٪</div>
-            <div className="text-xs text-muted-foreground mt-1">توصیه به دیگران</div>
-          </div>
-          <div className="text-center">
-            <div className="text-3xl font-bold text-primary">+۱۲۰هزار</div>
-            <div className="text-xs text-muted-foreground mt-1">بیمار درمان‌شده</div>
-          </div>
-          <div className="text-center">
-            <div className="text-3xl font-bold text-primary">+۸٬۵۰۰</div>
-            <div className="text-xs text-muted-foreground mt-1">نظر مثبت</div>
-          </div>
-        </motion.div>
       </div>
     </section>
   );

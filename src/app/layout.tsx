@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Vazirmatn } from "next/font/google";
+import { Vazirmatn, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as SonnerToaster } from "@/components/ui/sonner";
@@ -8,22 +8,32 @@ const vazirmatn = Vazirmatn({
   subsets: ["arabic", "latin"],
   variable: "--font-vazirmatn",
   display: "swap",
+  weight: ["300", "400", "500", "600", "700", "800", "900"],
+});
+
+const playfair = Playfair_Display({
+  subsets: ["latin"],
+  variable: "--font-playfair",
+  display: "swap",
+  weight: ["400", "500", "600", "700", "800", "900"],
+  style: ["normal", "italic"],
 });
 
 export const metadata: Metadata = {
-  title: "بیمارستان تخصصی شفای نوین | مراقبت جامع، اعتماد همیشگی",
+  title: "بیمارستان تخصصی شفای نوین | مرجع درمان تخصصی ایران",
   description:
-    "بیمارستان تخصصی شفای نوین با بیش از ۲۵ سال تجربه، ارائه‌دهنده خدمات تخصصی پزشکی شامل بخش‌های مختلف درمانی، پزشکان مجرب، تجهیزات پیشرفته و نوبت‌دهی آنلاین. کیفیت درمان، آرامش شما.",
+    "بیمارستان تخصصی شفای نوین، مرجع درمان تخصصی با ۲۵ سال تجربه، ۸۰ پزشک متخصص برجسته و تجهیزات نسل جدید. کیفیت جهانی، شفقت ایرانی. نوبت‌دهی آنلاین ۲۴ ساعته.",
   keywords: [
-    "بیمارستان",
-    "درمانگاه",
+    "بیمارستان تخصصی",
     "پزشک متخصص",
     "نوبت‌دهی آنلاین",
     "خدمات پزشکی",
-    "اورژانس",
-    "جراحی",
-    "چکاپ",
+    "اورژانس ۲۴ ساعته",
+    "جراحی تخصصی",
+    "چکاپ سلامت",
     "بیمارستان تهران",
+    "ICU",
+    "جراحی قلب",
   ],
   authors: [{ name: "بیمارستان شفای نوین" }],
   icons: {
@@ -31,7 +41,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "بیمارستان تخصصی شفای نوین",
-    description: "مراقبت جامع، اعتماد همیشگی - خدمات پزشکی تخصصی با کادر مجرب",
+    description: "مرجع درمان تخصصی با کیفیت جهانی و شفقت ایرانی",
     siteName: "بیمارستان شفای نوین",
     type: "website",
     locale: "fa_IR",
@@ -46,7 +56,7 @@ export default function RootLayout({
   return (
     <html lang="fa" dir="rtl" suppressHydrationWarning>
       <body
-        className={`${vazirmatn.variable} font-sans antialiased bg-background text-foreground`}
+        className={`${vazirmatn.variable} ${playfair.variable} font-sans antialiased bg-background text-foreground`}
       >
         {children}
         <Toaster />

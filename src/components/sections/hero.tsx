@@ -1,75 +1,115 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
+import { useRef } from "react";
 import { Button } from "@/components/ui/button";
 import {
-  Heart,
-  Phone,
-  ChevronLeft,
-  Stethoscope,
+  PhoneCall,
   Calendar,
   ShieldCheck,
-  Award,
-  Clock,
   Star,
-  PhoneCall,
+  ArrowLeft,
+  Activity,
+  Award,
+  Play,
 } from "lucide-react";
 import Link from "next/link";
 import { AppointmentDialog } from "@/components/appointment-dialog";
-import { HOSPITAL_INFO, STATS } from "@/lib/hospital-data";
+import { HOSPITAL_INFO, STATS, HERO_IMAGES } from "@/lib/hospital-data";
 
-const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
-  calendar: Calendar,
-  users: Stethoscope,
-  heart: Heart,
-  building: Award,
-};
+function AnimatedCounter({ value, suffix }: { value: number; suffix: string }) {
+  const ref = useRef<HTMLSpanElement>(null);
+
+  return (
+    <span ref={ref} className="tabular-nums">
+      {value.toLocaleString("fa-IR")}
+      {suffix}
+    </span>
+  );
+}
 
 export function Hero() {
-  return (
-    <section id="home" className="relative overflow-hidden bg-gradient-hero">
-      {/* Background decorative elements */}
-      <div className="absolute inset-0 bg-pattern-grid opacity-50" />
-      <div className="absolute top-0 left-0 w-96 h-96 bg-cyan-300/20 rounded-full blur-3xl -translate-x-1/3 -translate-y-1/3" />
-      <div className="absolute bottom-0 right-0 w-96 h-96 bg-rose-300/20 rounded-full blur-3xl translate-x-1/3 translate-y-1/3" />
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start start", "end start"],
+  });
 
-      <div className="container relative mx-auto px-4 pt-12 pb-20 lg:pt-20 lg:pb-32">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
-          {/* Right side - Content (RTL: first) */}
-          <motion.div
-            initial={{ opacity: 0, x: 30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-right space-y-6"
-          >
-            {/* Trust badge */}
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-teal-100/80 text-teal-700 text-sm font-medium border border-teal-200">
-              <ShieldCheck className="size-4" />
-              <span>بیمارستان مورد تأیید وزارت بهداشت</span>
-              <span className="w-1 h-1 rounded-full bg-teal-400" />
-              <span>اعتبار ISO 9001</span>
-            </div>
+  const y = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
+  const opacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
+  const scale = useTransform(scrollYProgress, [0, 1], [1, 1.1]);
+
+  return (
+    <section id="home" ref={containerRef} className="relative min-h-[100vh] overflow-hidden bg-[oklch(0.12_0.02_240)]">
+      {/* Background image with parallax */}
+      <motion.div
+        style={{ y, scale }}
+        className="absolute inset-0 z-0"
+      >
+        <img
+          src={HERO_IMAGES.building}
+          alt="بیمارستان شفای نوین"
+          className="w-full h-full object-cover"
+        />
+        {/* Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-l from-[oklch(0.12_0.02_240/0.95)] via-[oklch(0.12_0.02_240/0.7)] to-[oklch(0.12_0.02_240/0.4)]" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[oklch(0.12_0.02_240)] via-transparent to-transparent" />
+      </motion.div>
+
+      {/* Pattern overlay */}
+      <div className="absolute inset-0 bg-pattern-grid-fine opacity-30 z-10" />
+
+      {/* Content */}
+      <motion.div
+        style={{ opacity }}
+        className="relative z-20 container mx-auto px-4 pt-20 lg:pt-28 pb-12"
+      >
+        <div className="grid lg:grid-cols-12 gap-8 items-center min-h-[80vh]">
+          {/* Right - Text content (RTL) */}
+          <div className="lg:col-span-7 text-right space-y-8">
+            {/* Eyebrow */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              className="flex items-center gap-3"
+            >
+              <span className="h-px w-12 bg-gradient-to-l from-transparent to-cyan-400" />
+              <span className="eyebrow-light">{HOSPITAL_INFO.englishName}</span>
+              <span className="size-1.5 rounded-full bg-cyan-400" />
+              <span className="eyebrow-light">Since {HOSPITAL_INFO.establishedGregorian}</span>
+            </motion.div>
 
             {/* Title */}
-            <div className="space-y-4">
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight text-balance">
-                سلامت شما،
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.1 }}
+              className="space-y-4"
+            >
+              <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold leading-[1.1] text-white text-balance">
+                مرجع درمان
                 <br />
-                <span className="text-gradient-medical">تعهد تخصصی</span> ماست
+                <span className="text-gradient-gold">تخصصی</span> ایران
               </h1>
-              <p className="text-lg text-muted-foreground leading-relaxed max-w-xl">
-                بیمارستان تخصصی {HOSPITAL_INFO.shortName} با بیش از ۲۵ سال تجربه، کادر پزشکی
-                مجرب و تجهیزات پیشرفته، در کنار شماست تا بهترین خدمات درمانی را در محیطی
-                آرام و امن دریافت کنید.
+              <p className="text-lg lg:text-xl text-white/80 leading-relaxed max-w-2xl text-pretty">
+                بیمارستان تخصصی {HOSPITAL_INFO.shortName} با ۲۵ سال تجربه، ۸۰ پزشک
+                متخصص برجسته و تجهیزات نسل جدید، کیفیت جهانی را با شفقت ایرانی
+                ترکیب می‌کند. در سخت‌ترین لحظات زندگی، در کنار شما هستیم.
               </p>
-            </div>
+            </motion.div>
 
-            {/* CTA buttons */}
-            <div className="flex flex-wrap items-center gap-4">
+            {/* CTAs */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              className="flex flex-wrap items-center gap-4"
+            >
               <AppointmentDialog>
                 <Button
                   size="lg"
-                  className="gap-2 bg-gradient-to-l from-teal-600 to-cyan-700 hover:from-teal-700 hover:to-cyan-800 text-white shadow-xl shadow-teal-600/20"
+                  className="gap-2 bg-gradient-to-l from-teal-600 to-cyan-700 hover:from-teal-700 hover:to-cyan-800 text-white shadow-floating hover:shadow-glow-teal transition-all duration-300 px-8 h-14 text-base"
                 >
                   <Calendar className="size-5" />
                   نوبت‌دهی آنلاین
@@ -79,131 +119,108 @@ export function Hero() {
                 size="lg"
                 asChild
                 variant="outline"
-                className="gap-2 border-2 border-rose-300 text-rose-600 hover:bg-rose-50"
+                className="gap-2 border-white/30 text-white hover:bg-white/10 hover:text-white hover:border-white/50 bg-white/5 backdrop-blur-md px-8 h-14 text-base"
               >
                 <a href={`tel:${HOSPITAL_INFO.emergencyPhone}`}>
                   <PhoneCall className="size-5" />
                   اورژانس: {HOSPITAL_INFO.emergencyPhone}
                 </a>
               </Button>
-            </div>
+            </motion.div>
 
-            {/* Stats */}
-            <div className="grid grid-cols-4 gap-4 pt-6 border-t border-border">
-              {STATS.map((stat, idx) => {
-                const Icon = iconMap[stat.icon] || Award;
-                return (
-                  <motion.div
-                    key={stat.label}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.3 + idx * 0.1 }}
-                    className="text-center"
-                  >
-                    <Icon className="size-5 text-primary mx-auto mb-2" />
-                    <div className="text-2xl font-bold text-foreground">{stat.value}</div>
-                    <div className="text-xs text-muted-foreground mt-1">{stat.label}</div>
-                  </motion.div>
-                );
-              })}
-            </div>
-          </motion.div>
+            {/* Trust badges */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+              className="flex flex-wrap items-center gap-x-6 gap-y-3 pt-8 border-t border-white/10"
+            >
+              {[
+                { icon: ShieldCheck, label: "تأیید وزارت بهداشت" },
+                { icon: Award, label: "ISO 9001:2015" },
+                { icon: Star, label: "رضایت ۹۸٪ بیماران" },
+              ].map((badge, i) => (
+                <div key={i} className="flex items-center gap-2 text-sm text-white/70">
+                  <badge.icon className="size-4 text-cyan-300" />
+                  {badge.label}
+                </div>
+              ))}
+            </motion.div>
+          </div>
 
-          {/* Left side - Visual */}
+          {/* Left - Stats card */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.7, delay: 0.2 }}
-            className="relative hidden lg:block"
+            initial={{ opacity: 0, x: 30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.7, delay: 0.4 }}
+            className="lg:col-span-5"
           >
-            {/* Main visual - circular composition */}
-            <div className="relative aspect-square max-w-lg mx-auto">
-              {/* Outer glow */}
-              <div className="absolute inset-0 bg-gradient-to-br from-teal-400/30 to-rose-400/30 rounded-full blur-3xl" />
-
-              {/* Medical cross composition */}
-              <div className="relative w-full h-full flex items-center justify-center">
-                {/* Rotating ring */}
-                <div
-                  className="absolute inset-4 rounded-full border-2 border-dashed border-teal-300/50"
-                  style={{ animation: "spin 30s linear infinite" }}
-                />
-
-                {/* Center card */}
-                <div className="relative z-10 w-64 h-64 rounded-3xl bg-white shadow-2xl flex flex-col items-center justify-center gap-4 border border-border">
-                  <div className="size-20 rounded-2xl bg-gradient-to-br from-rose-500 to-orange-500 flex items-center justify-center shadow-lg shadow-rose-500/30">
-                    <Heart className="size-10 text-white fill-white" />
-                  </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-foreground">۲۴/۷</div>
-                    <div className="text-sm text-muted-foreground">پشتیبانی اورژانس</div>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    {[1, 2, 3, 4, 5].map((i) => (
-                      <Star key={i} className="size-4 text-amber-400 fill-amber-400" />
-                    ))}
+            <div className="glass-dark rounded-3xl p-8 shadow-floating">
+              {/* Top: featured doctor preview */}
+              <div className="flex items-center gap-4 pb-6 border-b border-white/10">
+                <div className="relative">
+                  <img
+                    src={HERO_IMAGES.doctor}
+                    alt="پزشک متخصص"
+                    className="size-16 rounded-2xl object-cover"
+                  />
+                  <div className="absolute -bottom-1 -right-1 size-5 rounded-full bg-emerald-500 border-2 border-white/20 flex items-center justify-center">
+                    <span className="size-1.5 rounded-full bg-white animate-pulse" />
                   </div>
                 </div>
-
-                {/* Floating cards */}
-                <motion.div
-                  animate={{ y: [0, -10, 0] }}
-                  transition={{ duration: 4, repeat: Infinity }}
-                  className="absolute top-8 right-0 glass-card rounded-2xl p-4 shadow-lg"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="size-10 rounded-xl bg-cyan-100 flex items-center justify-center">
-                      <Stethoscope className="size-5 text-cyan-700" />
-                    </div>
-                    <div>
-                      <div className="text-sm font-bold">+۸۰ پزشک متخصص</div>
-                      <div className="text-xs text-muted-foreground">کادر مجرب</div>
-                    </div>
-                  </div>
-                </motion.div>
-
-                <motion.div
-                  animate={{ y: [0, 10, 0] }}
-                  transition={{ duration: 5, repeat: Infinity, delay: 0.5 }}
-                  className="absolute bottom-12 left-0 glass-card rounded-2xl p-4 shadow-lg"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="size-10 rounded-xl bg-emerald-100 flex items-center justify-center">
-                      <ShieldCheck className="size-5 text-emerald-700" />
-                    </div>
-                    <div>
-                      <div className="text-sm font-bold">ایمنی بیمار</div>
-                      <div className="text-xs text-muted-foreground">استاندارد جهانی</div>
-                    </div>
-                  </div>
-                </motion.div>
-
-                <motion.div
-                  animate={{ y: [0, -8, 0] }}
-                  transition={{ duration: 6, repeat: Infinity, delay: 1 }}
-                  className="absolute top-1/2 -left-4 -translate-y-1/2 glass-card rounded-2xl p-3 shadow-lg"
-                >
-                  <div className="flex items-center gap-2">
-                    <Clock className="size-4 text-primary" />
-                    <span className="text-xs font-bold">نوبت آنلاین</span>
-                  </div>
-                </motion.div>
+                <div>
+                  <div className="text-xs text-cyan-300 mb-1">پذیرش فعال</div>
+                  <div className="text-white font-bold">۸۰+ پزشک متخصص</div>
+                  <div className="text-xs text-white/60">آماده ویزیت</div>
+                </div>
               </div>
+
+              {/* Stats grid */}
+              <div className="grid grid-cols-2 gap-px bg-white/10 mt-6 rounded-2xl overflow-hidden">
+                {STATS.map((stat, idx) => (
+                  <div
+                    key={idx}
+                    className="bg-white/5 p-5 hover:bg-white/10 transition-colors"
+                  >
+                    <div className="text-3xl lg:text-4xl font-bold text-white mb-1">
+                      <AnimatedCounter value={stat.value} suffix={stat.suffix} />
+                    </div>
+                    <div className="text-sm text-white/70 mb-0.5">{stat.label}</div>
+                    <div className="text-xs text-cyan-300/70">{stat.sublabel}</div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Bottom CTA */}
+              <Link
+                href="#doctors"
+                className="mt-6 flex items-center justify-between p-4 rounded-xl bg-gradient-to-l from-teal-600/20 to-transparent border border-teal-500/30 hover:border-teal-400/50 transition-colors group"
+              >
+                <div>
+                  <div className="text-sm text-white/70 mb-1">آشنا شوید</div>
+                  <div className="text-white font-bold">تیم پزشکی ما</div>
+                </div>
+                <div className="size-10 rounded-full bg-teal-500/20 flex items-center justify-center group-hover:bg-teal-500/30 transition-colors">
+                  <ArrowLeft className="size-5 text-cyan-300" />
+                </div>
+              </Link>
             </div>
           </motion.div>
         </div>
-      </div>
+      </motion.div>
 
-      {/* Bottom curve */}
-      <div className="absolute bottom-0 left-0 right-0">
-        <svg viewBox="0 0 1440 100" fill="none" className="w-full">
-          <path
-            d="M0 100V60C240 20 480 0 720 0C960 0 1200 20 1440 60V100H0Z"
-            fill="white"
-            fillOpacity="0.5"
-          />
-        </svg>
-      </div>
+      {/* Scroll indicator */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1 }}
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 hidden lg:block"
+      >
+        <div className="flex flex-col items-center gap-2">
+          <span className="text-xs text-white/40 tracking-[0.2em] uppercase">Scroll</span>
+          <div className="w-px h-12 bg-gradient-to-b from-white/40 to-transparent" />
+        </div>
+      </motion.div>
     </section>
   );
 }
