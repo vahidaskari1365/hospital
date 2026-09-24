@@ -1,0 +1,169 @@
+// Prisma schema for Hospital Management System - شفای نوین
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String         @id @default(cuid())
+  email        String         @unique
+  phone        String?        @unique
+  nationalId   String?        @unique
+  name         String?
+  password     String?
+  role         String         @default("patient") // patient | admin | doctor
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  appointments Appointment[]
+  messages     Message[]
+  documents    MedicalDocument[]
+}
+
+model Department {
+  id          String    @id @default(cuid())
+  slug        String    @unique
+  name        String
+  description String?
+  icon        String?
+  features    String?   // JSON string of features list
+  doctors     Doctor[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Doctor {
+  id           String         @id @default(cuid())
+  slug         String         @unique
+  name         String
+  title        String?        // e.g. متخصص قلب و عروق
+  specialty    String?
+  departmentId String?
+  department   Department?    @relation(fields: [departmentId], references: [id])
+  bio          String?
+  education    String?        // JSON string of education history
+  experience   Int            @default(0)
+  image       String?
+  rating       Float          @default(5.0)
+  available    Boolean        @default(true)
+  appointments Appointment[]
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+}
+
+model Appointment {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  doctorId    String
+  doctor      Doctor   @relation(fields: [doctorId], references: [id])
+  date        DateTime
+  time        String
+  status      String   @default("pending") // pending | confirmed | completed | cancelled
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model NewsArticle {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  title       String
+  excerpt     String?
+  content     String
+  category    String   @default("general") // general | news | article | health-tip
+  image       String?
+  author      String?
+  published   Boolean  @default(true)
+  featured    Boolean  @default(false)
+  views       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model MedicalService {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  title       String
+  description String?
+  price       String?  // stored as string for currency formatting
+  duration    String?  // e.g. "1 ساعت"
+  features    String?  // JSON string of included items
+  category    String   @default("checkup") // checkup | surgery | consultation | package
+  popular     Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model MedicalDocument {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  filename  String
+  fileUrl   String
+  fileType  String   @default("image")
+  notes     String?
+  createdAt DateTime @default(now())
+}
+
+model Message {
+  id        String   @id @default(cuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+  name      String
+  email     String
+  phone     String?
+  subject   String
+  content   String
+  status    String   @default("unread") // unread | read | replied
+  createdAt DateTime @default(now())
+}
+
+model Facility {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  name        String
+  description String?
+  icon        String?
+  image       String?
+  features    String?  // JSON string
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model FaqItem {
+  id        String   @id @default(cuid())
+  question String
+  answer    String
+  category String   @default("general")
+  order     Int     @default(0)
+  createdAt DateTime @default(now())
+}
+
+model GalleryItem {
+  id        String   @id @default(cuid())
+  title     String
+  type      String   @default("image") // image | video
+  url       String
+  category  String   @default("general")
+  createdAt DateTime @default(now())
+}
+
+model SiteSettings {
+  id              String   @id @default("default")
+  hospitalName    String   @default("بیمارستان شفای نوین")
+  tagline         String?
+  phone           String?
+  emergencyPhone  String?
+  address         String?
+  email           String?
+  workingHours    String?
+  latitude        String?
+  longitude       String?
+  socialLinks     String?  // JSON
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
